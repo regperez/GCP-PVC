@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: sftp-backup
+  namespace: esb
+spec:
+  schedule: "0 0 * * *"  # Se ejecuta diariamente a la medianoche
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: sftp-backup
+            image: google/cloud-sdk:latest
+            command: ["/bin/bash", "-c", "/scripts/backup.sh"]
+            volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+            env:
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/secrets/gcp-key.json"
+          restartPolicy: OnFailure
+          volumes:
+          - name: scripts
+            configMap:
+              name: sftp-backup-scripts
+          - name: gcp-key
+            secret:
+              secretName: gcp-key-secret
+

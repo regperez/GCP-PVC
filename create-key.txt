@@ -1,0 +1,4 @@
+kubectl create secret generic gcp-key-secret \
+  --from-file=gcp-key.json=gcp-key.json \
+  --namespace=esb
+
